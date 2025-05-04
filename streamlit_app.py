@@ -129,3 +129,23 @@ ax4.xaxis.set_major_locator(mdates.MonthLocator())
 ax4.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y')) 
 fig4.autofmt_xdate() 
 st.pyplot(fig4) 
+
+# Insight 5: Normalized Condition Severity (enhanced clarity) 
+labels = filtered['Species'].unique() 
+bdata = [filtered[filtered['Species']==sp]['PercentageOfThroughput'] for sp in labels] 
+fig5, ax5 = plt.subplots(figsize=(8, 4)) 
+# Boxplot 
+ax5.boxplot(bdata, labels=labels, patch_artist=True) 
+# Jittered scatter for individual points 
+import numpy as np 
+for i, sp in enumerate(labels, start=1): 
+ y = filtered[filtered['Species']==sp]['PercentageOfThroughput'] 
+ x = np.random.normal(i, 0.05, size=len(y)) 
+ ax5.scatter(x, y, alpha=0.6, s=10) 
+# Formatting 
+ax5.set_title('Distribution of Condition Severity by Species') 
+ax5.set_xlabel('Species') 
+ax5.set_ylabel('Percentage of Throughput') 
+plt.setp(ax5.get_xticklabels(), rotation=45, ha='right') 
+fig5.tight_layout() 
+st.pyplot(fig5) 
