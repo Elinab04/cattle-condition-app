@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np 
 
 # Page configuration
 st.set_page_config(page_title='Cattle Health Conditions Dashboard', layout='wide')
@@ -28,6 +29,12 @@ st.sidebar.header('Filters')
 species = st.sidebar.multiselect('Select Species', df['Species'].unique(), df['Species'].unique())
 inspection_types = st.sidebar.multiselect('Select Inspection Type', df['InspectionType'].unique(), df['InspectionType'].unique())
 date_range = st.sidebar.date_input('Select Month Range', [df['YearMonth'].min().date(), df['YearMonth'].max().date()])
+
+if not species:
+    species = df['Species'].unique()
+if not inspection_types:
+    inspection_types = df['InspectionType'].unique()
+
 
 # Convert dates for filtering
 start_date = pd.to_datetime(date_range[0])
@@ -58,4 +65,12 @@ monthly = filtered.groupby('YearMonth')['NumberOfConditions'].sum()
 fig1, ax1 = plt.subplots()
 ax1.plot(monthly.index, monthly.values)
 ax1.set_title('Total Conditions Over Time')
+ax1.set_xlabel('Month')
+ax1.set_ylabel('Number of Conditions')
+# Show only month labels on x-axis
+import matplotlib.dates as mdates
+ax1.xaxis.set_major_locator(mdates.MonthLocator())
+ax1.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
+fig1.autofmt_xdate()
 st.pyplot(fig1)
+
