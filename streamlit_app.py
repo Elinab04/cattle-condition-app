@@ -74,3 +74,14 @@ ax1.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
 fig1.autofmt_xdate()
 st.pyplot(fig1)
 
+# Insight 2: Species-Specific Condition Rates 
+
+species_stats = filtered.groupby('Species').agg( 
+    total_conditions=('NumberOfConditions','sum'), 
+    total_throughput=('Throughput','sum') 
+) 
+species_stats['rate'] = species_stats['total_conditions'] / species_stats['total_throughput'] * 100 
+fig2, ax2 = plt.subplots() 
+ax2.bar(species_stats.index, species_stats['rate']) 
+ax2.set_title('Condition Rate by Species (% of Throughput)') 
+st.pyplot(fig2) 
