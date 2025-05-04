@@ -85,3 +85,47 @@ fig2, ax2 = plt.subplots()
 ax2.bar(species_stats.index, species_stats['rate']) 
 ax2.set_title('Condition Rate by Species (% of Throughput)') 
 st.pyplot(fig2) 
+
+# Insight 3: Inspection Type Effectiveness (legend only, count-based percentages) 
+insp_stats = filtered.groupby('InspectionType').agg( 
+    conditions=('NumberOfConditions', 'sum'), 
+    throughput=('Throughput', 'sum') 
+) 
+# Calculate slice proportions based on condition counts 
+total_conditions = insp_stats['conditions'].sum() 
+inhab = insp_stats['conditions'] / total_conditions * 100  # percentages of total conditions 
+fig3, ax3 = plt.subplots() 
+# Draw pie without labels 
+wedges, _ = ax3.pie( 
+    insp_stats['conditions'], 
+    labels=None, 
+    startangle=90, 
+    wedgeprops={'linewidth': 0.5, 'edgecolor': 'white'} 
+) 
+# Create legend with count-based percentage 
+entry_labels = [f"{label}: {pct:.1f}%" for label, pct in zip(insp_stats.index, inhab)] 
+ax3.legend( 
+    wedges, 
+    entry_labels, 
+    title='Inspection Type', 
+    loc='center left', 
+    bbox_to_anchor=(1, 0.5), 
+    fontsize=9 
+) 
+ax3.set_title('Condition Rate by Inspection Type') 
+ax3.axis('equal')  # Equal aspect ratio ensures pie is circular 
+st.pyplot(fig3) 
+
+# Insight 4: Reporting Plant Coverage 
+plants = filtered.groupby('YearMonth')['NumberOfThroughputPlants'].sum() 
+fig4, ax4 = plt.subplots() 
+ax4.bar(plants.index, plants.values) 
+ax4.set_title('Number of Reporting Plants Over Time') 
+ax4.set_xlabel('Month') 
+ax4.set_ylabel('Plant Count') 
+# Format x-axis to show only month names 
+import matplotlib.dates as mdates 
+ax4.xaxis.set_major_locator(mdates.MonthLocator()) 
+ax4.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y')) 
+fig4.autofmt_xdate() 
+st.pyplot(fig4) 
