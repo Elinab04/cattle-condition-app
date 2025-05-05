@@ -61,6 +61,8 @@ col3.metric('Reporting Plants', int(filtered['NumberOfThroughputPlants'].max()))
 st.markdown('---')
 
 # Insight 1: Temporal Trend of Conditions
+st.subheader('Conditions Over Time')
+st.markdown('This line chart shows the total number of detected health conditions each month to highlight temporal trends and seasonal patterns.')
 monthly = filtered.groupby('YearMonth')['NumberOfConditions'].sum()
 fig1, ax1 = plt.subplots()
 ax1.plot(monthly.index, monthly.values)
@@ -75,11 +77,12 @@ fig1.autofmt_xdate()
 st.pyplot(fig1)
 
 # Insight 2: Species-Specific Condition Rates 
-
-species_stats = filtered.groupby('Species').agg( 
-    total_conditions=('NumberOfConditions','sum'), 
-    total_throughput=('Throughput','sum') 
-) 
+st.subheader('Condition Rate by Species')
+st.markdown('This bar chart compares the condition rate (as a percentage of throughput) across different animal species to identify which groups have higher incidence rates.')
+species_stats = filtered.groupby('Species').agg(
+    total_conditions=('NumberOfConditions','sum'),
+    total_throughput=('Throughput','sum')
+)
 species_stats['rate'] = species_stats['total_conditions'] / species_stats['total_throughput'] * 100 
 fig2, ax2 = plt.subplots() 
 ax2.bar(species_stats.index, species_stats['rate']) 
@@ -87,6 +90,8 @@ ax2.set_title('Condition Rate by Species (% of Throughput)')
 st.pyplot(fig2) 
 
 # Insight 3: Inspection Type Effectiveness (legend only, count-based percentages) 
+st.subheader('Condition Distribution by Inspection Type')
+st.markdown('This pie chart shows the share of detected conditions by inspection type, helping to assess ante-mortem vs post-mortem detection effectiveness.')
 insp_stats = filtered.groupby('InspectionType').agg( 
     conditions=('NumberOfConditions', 'sum'), 
     throughput=('Throughput', 'sum') 
@@ -117,6 +122,8 @@ ax3.axis('equal')  # Equal aspect ratio ensures pie is circular
 st.pyplot(fig3) 
 
 # Insight 4: Reporting Plant Coverage 
+st.subheader('Reporting Plant Count Over Time')
+st.markdown('This bar chart shows the number of plants reporting throughput each month, indicating reporting consistency and coverage.')
 plants = filtered.groupby('YearMonth')['NumberOfThroughputPlants'].sum() 
 fig4, ax4 = plt.subplots() 
 ax4.bar(plants.index, plants.values) 
@@ -131,6 +138,8 @@ fig4.autofmt_xdate()
 st.pyplot(fig4) 
 
 # Insight 5: Normalized Condition Severity (enhanced clarity) 
+st.subheader('Severity Distribution by Species')
+st.markdown('This box plot with jittered points displays the distribution of condition severity (% of throughput) across species to reveal variability and outliers.')
 labels = filtered['Species'].unique() 
 bdata = [filtered[filtered['Species']==sp]['PercentageOfThroughput'] for sp in labels] 
 fig5, ax5 = plt.subplots(figsize=(8, 4)) 
